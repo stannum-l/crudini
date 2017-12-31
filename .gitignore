@@ -1,0 +1,12 @@
+*.pyc
+*.sw?
+*.egg/
+vendor
+*venv
+build/
+AUTHORS
+ChangeLog
+.DS_Store
+.coverage
+.tox
+*.egg-info/

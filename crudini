@@ -9,8 +9,7 @@
 # published by the Free Software Foundation. http://gnu.org/licenses/gpl.html
 
 import atexit
-from cStringIO import StringIO
-import ConfigParser
+from io import StringIO
 import contextlib
 import errno
 import getopt
@@ -19,9 +18,15 @@ import iniparse
 import os
 import pipes
 import shutil
+import six
 import string
 import sys
 import tempfile
+
+try:
+    import configparser
+except:
+    from six.moves import configparser
 
 
 def error(message=None):
@@ -36,7 +41,7 @@ def delete_if_exists(path):
         os.unlink(path)
     except EnvironmentError as e:
         if e.errno != errno.ENOENT:
-            print str(e)
+            print(str(e))
             raise
 
 
@@ -213,7 +218,7 @@ class Print():
         :param section: str
         """
 
-        print section
+        print(section)
 
     def name_value(self, name, value, section=None):
         """Print parameter.
@@ -225,19 +230,19 @@ class Print():
 
         if value == 'crudini_no_arg':
             value = ''
-        print name or value
+        print(name or value)
 
 
 class PrintIni(Print):
     """Use for ini output format."""
 
     def section_header(self, section):
-        print "[%s]" % section
+        print("[%s]" % section)
 
     def name_value(self, name, value, section=None):
         if value == 'crudini_no_arg':
             value = ''
-        print name, '=', value.replace('\n', '\n ')
+        print(name, '=', value.replace('\n', '\n '))
 
 
 class PrintLines(Print):
@@ -256,7 +261,7 @@ class PrintLines(Print):
             value = ''
         if value:
             line += ' = %s' % value.replace('\n', '\\n')
-        print line
+        print(line)
 
 
 class PrintSh(Print):
@@ -321,7 +326,7 @@ class Crudini():
         except Exception:
             t, v, tb = sys.exc_info()
             delete_if_exists(path)
-            raise t, v, tb
+            raise t(v).with_traceback(tb)
 
     @staticmethod
     def file_replace(name, data):
@@ -500,7 +505,7 @@ Options:
             if o in ('--help',):
                 self.usage(0)
             elif o in ('--version',):
-                print 'crudini 0.9'
+                print('crudini 0.9')
                 sys.exit(0)
             elif o in ('--verbose',):
                 self.verbose = True
